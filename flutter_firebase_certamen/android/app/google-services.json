@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "477615701215",
+    "project_id": "flutter-cer3",
+    "storage_bucket": "flutter-cer3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477615701215:android:15a8af5beb07cc23923d6a",
+        "android_client_info": {
+          "package_name": "cl.fluttercer3.flutter_firebase_certamen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSGSBVfF0M5C6CkW5xuc28_415AmcO1Wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
