@@ -8,17 +8,15 @@ class Principalpage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-  var screenSize = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: SizedBox(
-            height: 70,
-            width: screenSize.width,
+            
             child: Image.asset(
-              'assets/images/Banner-Colo.png',
-              fit: BoxFit.cover,
+              'assets/images/colo_colo.png',
+              fit: BoxFit.fill,
             ),
           ),
           bottom: const TabBar(
