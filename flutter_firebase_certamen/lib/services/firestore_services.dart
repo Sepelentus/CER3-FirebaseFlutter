@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService{
+
   // Obtener lista de jugadores
   Stream<QuerySnapshot> jugadores(){
     return FirebaseFirestore.instance.collection('jugadores').snapshots();
@@ -14,10 +15,12 @@ class FirestoreService{
     await FirebaseFirestore.instance.collection('jugadores').doc(id).delete();
   }
 
-  void addJugador(String nombre, String arquero) async {
+  void addJugador(String nombre, String posicion, String dorsal, String fechaNacimiento) async {
     await FirebaseFirestore.instance.collection('jugadores').add({
-      'nombre': nombre,
-      'arquero': arquero,
+      'Nombre ': nombre,
+      'Posicion': posicion,
+      'Dorsal': dorsal,
+      'Fecha Nacimiento': fechaNacimiento,
     });
   }
 }
