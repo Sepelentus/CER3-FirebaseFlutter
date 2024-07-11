@@ -12,54 +12,40 @@ class LoginPage extends StatelessWidget {
     final AutenticacionGoogle _authService = AutenticacionGoogle();
 
     return Scaffold(
-      backgroundColor: Color(0xFF1b141a),
+      backgroundColor: Color.fromARGB(255, 237, 237, 237),
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(
+                child: Image.asset(
+                  'assets/images/cc.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
               Text(
-                'Iniciar Sesión',
+                '¡Bienvenido!',
                 style: TextStyle(
-                  color: Color(0xFF3199c9),
-                  fontSize: 28,
+                  color: Color.fromARGB(255, 201, 49, 49),
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 40),
-              TextField(
-                style: TextStyle(color: Color(0xFF3199c9)),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xFFdedbde),
-                  hintText: 'Correo Electrónico',
-                  hintStyle: TextStyle(color: Color(0xFF3199c9)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
+              Text(
+                'Porfavor, inicie sesion con Google',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
                 ),
               ),
               SizedBox(height: 20),
-              TextField(
-                style: TextStyle(color: Color(0xFF3199c9)),
-                obscureText: true,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xFFdedbde),
-                  hintText: 'Contraseña',
-                  hintStyle: TextStyle(color: Color(0xFF3199c9)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              SizedBox(height: 40),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF3199c9),
+                  backgroundColor: Color.fromARGB(255, 12, 29, 86),
                   foregroundColor: Color(0xFF1b141a),
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   shape: RoundedRectangleBorder(
@@ -84,15 +70,15 @@ class LoginPage extends StatelessWidget {
                   }
                 },
                 icon: Image.asset(
-                  'assets/img/google_icon.png',
-                  height: 24.0,
-                  width: 24.0,
+                  'assets/images/google_icon.png',
+                  height: 32.0,
+                  width: 32.0,
                 ),
                 label: Text(
                   'Ingresar con Google',
                   style: TextStyle(
                     color: Color(0xFFdedbde),
-                    fontSize: 16,
+                    fontSize: 18,
                   ),
                 ),
               ),
