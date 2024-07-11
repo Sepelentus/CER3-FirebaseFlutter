@@ -13,7 +13,7 @@ class JugadoresPage extends StatefulWidget {
 class _JugadoresPageState extends State<JugadoresPage> {
   @override
   Widget build(BuildContext context) {
-    String selectedPosicion = 'Delantero';
+    String? selectedPosicion = 'Arquero';
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
@@ -53,7 +53,7 @@ class _JugadoresPageState extends State<JugadoresPage> {
                       return ListTile(
                           leading: Icon(MdiIcons.account),
                           title: Text(
-                          'Nombre: ${jugador['Nombre ']} \nPosicion: ${jugador['Posicion']} Dorsal: ${jugador['Dorsal']}'),
+                              'Nombre: ${jugador['Nombre ']} \nPosicion: ${jugador['Posicion']} Dorsal: ${jugador['Dorsal']}'),
                           subtitle: Text('${jugador['Fecha Nacimiento']}'),
 
                           //eliminar jugador
@@ -120,23 +120,23 @@ class _JugadoresPageState extends State<JugadoresPage> {
                           nombre = value;
                         },
                       ),
-                      DropdownButton<String>(
-                        value: selectedPosicion,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedPosicion = newValue!;
-                            posicion = newValue; 
-                          });
-                        },
-                        items: <String>['Delantero', 'Defensa', 'Portero', 'Mediocampo']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                      //dorsal
+                      //mostrar dropdown con posiciones de jugadores de futbol
+                  DropdownButton<String>(
+            value: selectedPosicion,
+            items: <String>['Arquero', 'Defensa', 'Mediocampista', 'Delantero']
+                .map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedPosicion = newValue;
+              });
+            },
+          ),
+
                       TextField(
                         decoration: InputDecoration(
                           labelText: 'Dorsal',
@@ -168,7 +168,8 @@ class _JugadoresPageState extends State<JugadoresPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                         // Agregar jugador
-                        FirestoreService().addJugador(nombre, posicion, dorsal, fechaNacimiento);
+                        FirestoreService().addJugador(
+                            nombre, posicion, dorsal, fechaNacimiento);
                       },
                     )
                   ],
