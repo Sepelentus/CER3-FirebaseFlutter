@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase_certamen/Initial/login.dart';
 import 'package:flutter_firebase_certamen/pages/copas.dart';
 import 'package:flutter_firebase_certamen/pages/jugadores_page.dart';
+import 'package:flutter_firebase_certamen/services/autentificacion_google.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 class Principalpage extends StatelessWidget {
-  const Principalpage({super.key});
+  final AutenticacionGoogle _authService = AutenticacionGoogle();
 
   @override
   Widget build(BuildContext context){
@@ -21,11 +23,27 @@ class Principalpage extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          
-          
-          
-          
-          
+
+          leading: Row(
+            children: [
+              IconButton(
+              onPressed: () async {
+                        await _authService.signOut();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+              icon: Icon(BoxIcons.bx_exit),
+              tooltip: 'Cerrar sesion',
+              color: Colors.blue,
+              padding: EdgeInsets.only(left: 25),
+              )
+            ],
+          ),
           //Text('COLO-COLO', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
           bottom:TabBar(
             //255,23,184,255
