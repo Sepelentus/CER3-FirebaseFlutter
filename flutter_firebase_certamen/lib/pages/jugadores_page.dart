@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_certamen/services/firestore_services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:intl/intl.dart';
 
 class JugadoresPage extends StatefulWidget {
   const JugadoresPage({super.key});
@@ -11,9 +12,9 @@ class JugadoresPage extends StatefulWidget {
 }
 
 class _JugadoresPageState extends State<JugadoresPage> {
+  String? selectedPosicion;
   @override
   Widget build(BuildContext context) {
-    String? selectedPosicion = 'Arquero';
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
@@ -21,9 +22,15 @@ class _JugadoresPageState extends State<JugadoresPage> {
           centerTitle: true,
           backgroundColor: Color.fromARGB(255, 0, 2, 3),
           title: Text(
-              style: TextStyle(color: Colors.white), 'Jugadores del equipo'),
+              style: TextStyle(color: Colors.white), 'JUGADORES DEL EQUIPO'),
+          titleTextStyle: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 22,
+            letterSpacing: 3,
+          ),
         ),
       ),
+
       body: Stack(
         children: [
           Container(
@@ -50,43 +57,68 @@ class _JugadoresPageState extends State<JugadoresPage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var jugador = snapshot.data!.docs[index];
-                      return ListTile(
-                          leading: Icon(MdiIcons.account),
-                          title: Text(
-                              'Nombre: ${jugador['Nombre ']} \nPosicion: ${jugador['Posicion']} Dorsal: ${jugador['Dorsal']}'),
-                          subtitle: Text('${jugador['Fecha Nacimiento']}'),
+                      DateTime fechaNacimiento =
+                          (jugador['Fecha Nacimiento'] as Timestamp).toDate();
+                      var fechaFormateada =
+                          DateFormat('dd/MM/yyyy').format(fechaNacimiento);
 
-                          //eliminar jugador
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Eliminar Jugador'),
-                                      content: Text(
-                                          '¿Está seguro de eliminar a ${jugador['Nombre ']}?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('Cancelar'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: Text('Eliminar'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                            // Eliminar jugador
-                                            FirestoreService()
-                                                .deleteJugador(jugador.id);
-                                          },
-                                        )
-                                      ],
-                                    );
-                                  });
-                            },
+                      return Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(26)),
+                          margin: EdgeInsets.all(5),
+                          elevation: 10,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                
+                                image: AssetImage("assets/images/cardwall.jpg"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: ListTile(
+                                leading: Icon(
+                                  MdiIcons.account,
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
+                                title: Text(
+                                    'Nombre: ${jugador['Nombre ']} \nPosicion: ${jugador['Posicion']} \nDorsal: ${jugador['Dorsal']}', style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
+                                subtitle: Text(
+                                    'Fecha de Nacimiento: ' + fechaFormateada, style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
+
+                                //eliminar jugador
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red,),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Eliminar Jugador'),
+                                            content: Text(
+                                                '¿Está seguro de eliminar a ${jugador['Nombre ']}?'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: Text('Cancelar'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              TextButton(
+                                                child: Text('Eliminar'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  // Eliminar jugador
+                                                  FirestoreService()
+                                                      .deleteJugador(
+                                                          jugador.id);
+                                                },
+                                              )
+                                            ],
+                                          );
+                                        });
+                                  },
+                                )),
                           ));
                     },
                   );
@@ -99,10 +131,14 @@ class _JugadoresPageState extends State<JugadoresPage> {
 
       //boton agregar jugador
       floatingActionButton: FloatingActionButton(
+        elevation: 10,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.red,
         onPressed: () {
           showDialog(
               context: context,
               builder: (BuildContext context) {
+                String? selectedPosicion;
                 String nombre = '';
                 String posicion = '';
                 String dorsal = '';
@@ -121,21 +157,26 @@ class _JugadoresPageState extends State<JugadoresPage> {
                         },
                       ),
                       //mostrar dropdown con posiciones de jugadores de futbol
-                  DropdownButton<String>(
-            value: selectedPosicion,
-            items: <String>['Arquero', 'Defensa', 'Mediocampista', 'Delantero']
-                .map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedPosicion = newValue;
-              });
-            },
-          ),
+                      DropdownButton<String>(
+                        value: selectedPosicion,
+                        hint: Text('Posicion'),
+                        items: <String>[
+                          'Arquero',
+                          'Defensa',
+                          'Mediocampista',
+                          'Delantero'
+                        ].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedPosicion = newValue!;
+                          });
+                        },
+                      ),
 
                       TextField(
                         decoration: InputDecoration(

@@ -12,22 +12,30 @@ class Principalpage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: SizedBox(
-            
+          backgroundColor: Colors.black,
+          centerTitle: true,
+          title: Container(
+            height: 65,
             child: Image.asset(
-              'assets/images/colo_colo.png',
-              fit: BoxFit.fill,
+              'assets/images/colo-colo-32.png',
+              fit: BoxFit.contain,
             ),
           ),
-          bottom: const TabBar(
+          
+          
+          
+          
+          
+          //Text('COLO-COLO', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          bottom:TabBar(
             //255,23,184,255
-            labelColor: Color.fromARGB(255, 57, 16, 223),
-            unselectedLabelColor: Colors.black,
-            indicatorColor: Color.fromARGB(255,23,184,255),
+            labelColor: Color.fromARGB(255, 255, 0, 0),
+            unselectedLabelColor: Color.fromARGB(83, 255, 255, 255),
+            indicatorColor: Color.fromARGB(255, 255, 255, 255),
             tabs: [Tab(icon: Icon(BoxIcons.bx_user)), Tab(icon: Icon(BoxIcons.bx_trophy))],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [JugadoresPage(), Copas()],
         ),
       ),
