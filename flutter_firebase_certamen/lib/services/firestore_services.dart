@@ -23,6 +23,8 @@ class FirestoreService{
       'Fecha Nacimiento': fechaNacimiento,
     });
   }
+
+  void addCopa(String s, String t, String u) {}
 }
 
 

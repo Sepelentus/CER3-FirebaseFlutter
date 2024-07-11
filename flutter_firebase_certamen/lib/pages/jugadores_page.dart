@@ -12,8 +12,31 @@ class JugadoresPage extends StatefulWidget {
 }
 
 class _JugadoresPageState extends State<JugadoresPage> {
+  final TextEditingController _fechaNacimientoController = TextEditingController();
+  
+  final DateFormat _formatoFecha = DateFormat('dd/MM/yyyy');
+
+
   String? selectedPosicion;
   @override
+  void dispose() {
+    _fechaNacimientoController.dispose();
+    super.dispose();
+  }
+  Future<void> _seleccionarFecha(BuildContext context) async {
+    final DateTime? fechaSeleccionada = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (fechaSeleccionada != null) {
+      setState(() {
+        _fechaNacimientoController.text = _formatoFecha.format(fechaSeleccionada);
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -57,11 +80,29 @@ class _JugadoresPageState extends State<JugadoresPage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var jugador = snapshot.data!.docs[index];
-                      DateTime fechaNacimiento =
-                          (jugador['Fecha Nacimiento'] as Timestamp).toDate();
-                      var fechaFormateada =
-                          DateFormat('dd/MM/yyyy').format(fechaNacimiento);
+                      
+                      DateTime fechaNacimiento;
+                      if (jugador['Fecha Nacimiento'] is String && jugador['Fecha Nacimiento'].isNotEmpty) {
+                        try {
+                          fechaNacimiento = DateFormat('dd/MM/yyyy').parse(jugador['Fecha Nacimiento']);
+                          
+                        } catch (e) {
+                          // Manejo de error o asignación de una fecha predeterminada
+                          fechaNacimiento = DateTime.now(); 
+// O cualquier fecha predeterminada
+                          // Opcional: mostrar un mensaje de error o log
+                        }
+                      } else if (jugador['Fecha Nacimiento'] is Timestamp) {
+                        // Si 'Fecha Nacimiento' es un Timestamp, lo convierte directamente a DateTime
+                        fechaNacimiento = jugador['Fecha Nacimiento'].toDate();
+                        
 
+                      } else {
+                        // Manejo de casos inesperados o asignación de una fecha predeterminada
+                        fechaNacimiento = DateTime.now();
+ // O cualquier fecha predeterminada
+                        // Opcional: mostrar un mensaje de error o log
+                      }
                       return Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(26)),
@@ -81,10 +122,11 @@ class _JugadoresPageState extends State<JugadoresPage> {
                                   size: 40,
                                   color: Colors.white,
                                 ),
+                                
                                 title: Text(
                                     'Nombre: ${jugador['Nombre ']} \nPosicion: ${jugador['Posicion']} \nDorsal: ${jugador['Dorsal']}', style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
                                 subtitle: Text(
-                                    'Fecha de Nacimiento: ' + fechaFormateada, style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
+                                    'Fecha de Nacimiento: '  + fechaNacimiento.toString(), style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
 
                                 //eliminar jugador
                                 trailing: IconButton(
@@ -131,7 +173,7 @@ class _JugadoresPageState extends State<JugadoresPage> {
 
       //boton agregar jugador
       floatingActionButton: FloatingActionButton(
-        elevation: 10,
+        elevation: 4,
         foregroundColor: Colors.white,
         backgroundColor: Colors.red,
         onPressed: () {
@@ -187,14 +229,20 @@ class _JugadoresPageState extends State<JugadoresPage> {
                         },
                       ),
                       //fecha de nacimiento
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Fecha de Nacimiento',
+                      GestureDetector(
+                        onTap: () => _seleccionarFecha(context),
+                        child: AbsorbPointer(
+                          child: TextField(
+                            controller: _fechaNacimientoController,
+                            decoration: InputDecoration(
+                              labelText: 'Fecha de Nacimiento',
+                            ),
+                          ),
                         ),
-                        onChanged: (value) {
-                          fechaNacimiento = value;
-                        },
                       ),
+                      
+
+                      
                     ],
                   ),
                   actions: <Widget>[

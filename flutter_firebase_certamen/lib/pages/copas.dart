@@ -53,10 +53,25 @@ class Copas extends StatelessWidget {
                           DateTime fechacopa = (copa['fecha'] as Timestamp).toDate();
                           var fechaFormateada = DateFormat('dd/MM/yyyy').format(fechacopa);
           
-                      return ListTile(
-                        leading: Icon(MdiIcons.account),
-                        title: Text('${copa['nombre_titulo']} \nFecha: ' + fechaFormateada),
-                        subtitle: Text('${copa['ultimo_partido']}'),
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(26)),
+                          margin: EdgeInsets.all(5),
+                          elevation: 10,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                
+                                image: AssetImage("assets/images/cardwall.jpg"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                        child: ListTile(
+                          leading: Icon(MdiIcons.trophy, color: Colors.amber, size: 40,),
+                          title: Text('${copa['nombre_titulo']} \nFecha: ' + fechaFormateada , style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
+                          subtitle: Text('${copa['ultimo_partido']}', style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
+                        ),
+                          )
                       );
                     },
                     
@@ -67,6 +82,51 @@ class Copas extends StatelessWidget {
           ),
         ],
       ),
+
+      //boton para añadir copas
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text('Añadir Copa'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    decoration: InputDecoration(hintText: 'Nombre de la Copa'),
+                    controller: TextEditingController(),
+                  ),
+                  TextField(
+                    decoration: InputDecoration(hintText: 'Ultimo Partido'),
+                    controller: TextEditingController(),
+                  ),
+                  TextField(
+                    decoration: InputDecoration(hintText: 'Fecha de la Copa'),
+                    controller: TextEditingController(),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: (){
+                    FirestoreService().addCopa('nombre_titulo', 'ultimo_partido', 'fecha');
+                    Navigator.pop(context);
+                  },
+                  child: Text('Añadir'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      )
     );
   }
 }
