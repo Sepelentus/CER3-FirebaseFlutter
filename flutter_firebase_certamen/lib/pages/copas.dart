@@ -5,9 +5,36 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:intl/intl.dart';
 
 
-class Copas extends StatelessWidget {
+class Copas extends StatefulWidget {
   const Copas({super.key});
 
+  @override
+  State<Copas> createState() => _CopasState();
+}
+
+class _CopasState extends State<Copas> {
+    final TextEditingController fechaNacimientoController = TextEditingController();
+  
+  final DateFormat _formatoFecha = DateFormat('dd/MM/yyyy');
+
+  void dispose() {
+    fechaNacimientoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _seleccionarFecha(BuildContext context) async {
+    final DateTime? fechaSeleccionada = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (fechaSeleccionada != null) {
+      setState(() {
+        fechaNacimientoController.text = _formatoFecha.format(fechaSeleccionada);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +77,18 @@ class Copas extends StatelessWidget {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index){
                       var copa = snapshot.data!.docs[index];
-                          DateTime fechacopa = (copa['fecha'] as Timestamp).toDate();
-                          var fechaFormateada = DateFormat('dd/MM/yyyy').format(fechacopa);
-          
+                      DateTime fechaNacimiento;
+                      if (copa['fecha'] is String && copa['fecha'].isNotEmpty) {
+                        try {
+                          fechaNacimiento = DateFormat('dd/MM/yyyy').parse(copa['fecha']);
+                        } catch (e) {
+                          fechaNacimiento = DateTime.now();
+                        }
+                      } else if (copa['fecha'] is Timestamp) {
+                        fechaNacimiento = copa['fecha'].toDate();
+                      } else {
+                        fechaNacimiento = DateTime.now();
+                      }
                       return Card(
                         shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(26)),
@@ -68,7 +104,7 @@ class Copas extends StatelessWidget {
                             ),
                         child: ListTile(
                           leading: Icon(MdiIcons.trophy, color: Colors.amber, size: 40,),
-                          title: Text('${copa['nombre_titulo']} \nFecha: ' + fechaFormateada , style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
+                          title: Text('${copa['nombre_titulo']} \nFecha: ' + _formatoFecha.format(fechaNacimiento) , style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
                           subtitle: Text('${copa['ultimo_partido']}', style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
                         ),
                           )

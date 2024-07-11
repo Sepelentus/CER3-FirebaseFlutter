@@ -12,7 +12,8 @@ class JugadoresPage extends StatefulWidget {
 }
 
 class _JugadoresPageState extends State<JugadoresPage> {
-  final TextEditingController _fechaNacimientoController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController fechaNacimientoController = TextEditingController();
   
   final DateFormat _formatoFecha = DateFormat('dd/MM/yyyy');
 
@@ -20,7 +21,7 @@ class _JugadoresPageState extends State<JugadoresPage> {
   String? selectedPosicion;
   @override
   void dispose() {
-    _fechaNacimientoController.dispose();
+    fechaNacimientoController.dispose();
     super.dispose();
   }
   Future<void> _seleccionarFecha(BuildContext context) async {
@@ -28,15 +29,14 @@ class _JugadoresPageState extends State<JugadoresPage> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
     if (fechaSeleccionada != null) {
       setState(() {
-        _fechaNacimientoController.text = _formatoFecha.format(fechaSeleccionada);
+        fechaNacimientoController.text = _formatoFecha.format(fechaSeleccionada);
       });
     }
   }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -76,32 +76,26 @@ class _JugadoresPageState extends State<JugadoresPage> {
                 } else {
                   // Datos recibidos
                   return ListView.separated(
-                    separatorBuilder: (context, index) => Divider(),
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.red,
+                      thickness: 5,
+                      endIndent: 20,
+                      indent: 20,
+                    ),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var jugador = snapshot.data!.docs[index];
-                      
                       DateTime fechaNacimiento;
                       if (jugador['Fecha Nacimiento'] is String && jugador['Fecha Nacimiento'].isNotEmpty) {
                         try {
                           fechaNacimiento = DateFormat('dd/MM/yyyy').parse(jugador['Fecha Nacimiento']);
-                          
                         } catch (e) {
-                          // Manejo de error o asignación de una fecha predeterminada
-                          fechaNacimiento = DateTime.now(); 
-// O cualquier fecha predeterminada
-                          // Opcional: mostrar un mensaje de error o log
+                          fechaNacimiento = DateTime.now();
                         }
                       } else if (jugador['Fecha Nacimiento'] is Timestamp) {
-                        // Si 'Fecha Nacimiento' es un Timestamp, lo convierte directamente a DateTime
                         fechaNacimiento = jugador['Fecha Nacimiento'].toDate();
-                        
-
                       } else {
-                        // Manejo de casos inesperados o asignación de una fecha predeterminada
                         fechaNacimiento = DateTime.now();
- // O cualquier fecha predeterminada
-                        // Opcional: mostrar un mensaje de error o log
                       }
                       return Card(
                           shape: RoundedRectangleBorder(
@@ -126,7 +120,7 @@ class _JugadoresPageState extends State<JugadoresPage> {
                                 title: Text(
                                     'Nombre: ${jugador['Nombre ']} \nPosicion: ${jugador['Posicion']} \nDorsal: ${jugador['Dorsal']}', style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
                                 subtitle: Text(
-                                    'Fecha de Nacimiento: '  + fechaNacimiento.toString(), style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
+                                    'Fecha de Nacimiento: '  + _formatoFecha.format(fechaNacimiento), style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
 
                                 //eliminar jugador
                                 trailing: IconButton(
@@ -180,70 +174,130 @@ class _JugadoresPageState extends State<JugadoresPage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
+                
                 String? selectedPosicion;
                 String nombre = '';
-                String posicion = '';
                 String dorsal = '';
                 String fechaNacimiento = '';
                 return AlertDialog(
                   title: Text('Agregar Jugador'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Nombre',
-                        ),
-                        onChanged: (value) {
-                          nombre = value;
-                        },
-                      ),
-                      //mostrar dropdown con posiciones de jugadores de futbol
-                      DropdownButton<String>(
-                        value: selectedPosicion,
-                        hint: Text('Posicion'),
-                        items: <String>[
-                          'Arquero',
-                          'Defensa',
-                          'Mediocampista',
-                          'Delantero'
-                        ].map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedPosicion = newValue!;
-                          });
-                        },
-                      ),
+                  content: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Nombre',
+                          ),
+                          onChanged: (value) {
+                            nombre = value;
+                              },
+                              validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor ingrese el nombre';
+                              }
+                              if (value.length < 3) {
+                                return 'El nombre debe tener al menos 3 caracteres';
+                              }
 
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Dorsal',
+                              if (value.length > 50) {
+                                return 'El nombre debe tener menos de 50 caracteres';
+                              }
+                              if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+                                return 'El nombre solo puede contener letras y espacios';
+                              }
+                              if (value.contains('  ')) {
+                                return 'El nombre no puede contener doble espacio';
+                              }
+                              if (value.trim().split(' ').length < 2) {
+                                return 'El nombre debe tener al menos un apellido';
+                              }
+                              return null;
+                            },
                         ),
-                        onChanged: (value) {
-                          dorsal = value;
-                        },
-                      ),
-                      //fecha de nacimiento
-                      GestureDetector(
-                        onTap: () => _seleccionarFecha(context),
-                        child: AbsorbPointer(
-                          child: TextField(
-                            controller: _fechaNacimientoController,
-                            decoration: InputDecoration(
-                              labelText: 'Fecha de Nacimiento',
+                        //mostrar dropdown con posiciones de jugadores de futbol
+                        DropdownButtonFormField<String>(
+                            value: selectedPosicion,
+                            hint: Text('Posición'),
+                            items: <String>['Arquero', 'Defensa', 'Mediocampista', 'Delantero']
+                                .map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedPosicion = newValue!;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor seleccione una posición';
+                              }
+                              return null;
+                            },
+                          ),
+                    
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Dorsal',
+                          ),
+                          onChanged: (value) {
+                            dorsal = value;
+                          },
+                          validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor ingrese el dorsal';
+                              }
+                              if (value.length < 1) {
+                                return 'El dorsal debe tener al menos 1 caracter';
+                              }
+                              if (value.length > 2) {
+                                return 'El dorsal debe tener menos de 2 caracteres';
+                              }
+                              if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                                return 'El dorsal solo puede contener números';
+                              }
+                              if (int.parse(value) < 1) {
+                                return 'El dorsal debe ser mayor a 0';
+                              }
+                              if (int.parse(value) > 99) {
+                                return 'El dorsal debe ser menor a 100';
+                              }
+                              return null;
+                            },
+                        ),
+                        //fecha de nacimiento
+                        GestureDetector(
+                          onTap: () => _seleccionarFecha(context),
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: fechaNacimientoController,
+                              decoration: InputDecoration(
+                                labelText: 'Fecha de Nacimiento',
+                              ),
+                              validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor seleccione la fecha de nacimiento';
+                                  }
+                                  if (value.length != 10) {
+                                    return 'Por favor seleccione la fecha de nacimiento';
+                                  }
+                                  return null;
+                                },
+                              
+                              
                             ),
+                            
                           ),
                         ),
-                      ),
-                      
-
-                      
-                    ],
+                        
+                    
+                        
+                      ],
+                    ),
                   ),
                   actions: <Widget>[
                     TextButton(
@@ -255,12 +309,19 @@ class _JugadoresPageState extends State<JugadoresPage> {
                     TextButton(
                       child: Text('Agregar'),
                       onPressed: () {
-                        Navigator.of(context).pop();
-                        // Agregar jugador
-                        FirestoreService().addJugador(
-                            nombre, posicion, dorsal, fechaNacimiento);
+                        if (_formKey.currentState!.validate()) {
+                          fechaNacimiento = fechaNacimientoController.text;
+                          Navigator.of(context).pop();
+                          // Agregar jugador
+                          FirestoreService().addJugador(
+                            nombre,
+                            selectedPosicion ?? '',
+                            dorsal,
+                            fechaNacimiento,
+                          );
+                        }
                       },
-                    )
+                    ),
                   ],
                 );
               });
