@@ -41,16 +41,28 @@ class _JugadoresPageState extends State<JugadoresPage> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
-        child: AppBar(
-          centerTitle: true,
-          backgroundColor: Color.fromARGB(255, 0, 2, 3),
-          title: Text(
-              style: TextStyle(color: Colors.white), 'JUGADORES DEL EQUIPO'),
-          titleTextStyle: TextStyle(
-            fontFamily: 'Outfit',
-            fontSize: 22,
-            letterSpacing: 3,
-          ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/TUNEL.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            AppBar(
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              title: Text(
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), 'JUGADORES DEL EQUIPO'),
+              titleTextStyle: TextStyle(
+                fontFamily: 'Outfit',
+                fontSize: 22,
+                letterSpacing: 3,
+              ),
+            ),
+          ],
         ),
       ),
 
@@ -59,7 +71,7 @@ class _JugadoresPageState extends State<JugadoresPage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/Wallp.jpeg'),
+                image: AssetImage('assets/images/s.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -106,7 +118,7 @@ class _JugadoresPageState extends State<JugadoresPage> {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 
-                                image: AssetImage("assets/images/cardwall.jpg"),
+                                image: AssetImage("assets/images/banner.png"),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -168,8 +180,8 @@ class _JugadoresPageState extends State<JugadoresPage> {
       //boton agregar jugador
       floatingActionButton: FloatingActionButton(
         elevation: 4,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.red,
+        foregroundColor: Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         onPressed: () {
           showDialog(
               context: context,

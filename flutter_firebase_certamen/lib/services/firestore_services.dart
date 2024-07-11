@@ -23,8 +23,18 @@ class FirestoreService{
       'Fecha Nacimiento': fechaNacimiento,
     });
   }
+void addCopa(String nombre_titulo, List<String> ultimo_partido, String fecha, String DatosCuriosos) async {
+  await FirebaseFirestore.instance.collection('copas').add({
+    'Nombre Titulo': nombre_titulo,
+    'Ultimo Partido': ultimo_partido,
+    'Fecha': fecha,
+    'Datos Curiosos': DatosCuriosos,
+  });
+}
 
-  void addCopa(String s, String t, String u) {}
+  void deleteCopa(String id) async{
+    await FirebaseFirestore.instance.collection('copas').doc(id).delete();
+  }
 }
 
 

@@ -5,20 +5,26 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:intl/intl.dart';
 
 
-class Copas extends StatefulWidget {
-  const Copas({super.key});
+class CopasPage extends StatefulWidget {
+  const CopasPage({super.key});
 
   @override
-  State<Copas> createState() => _CopasState();
+  State<CopasPage> createState() => _CopasState();
 }
 
-class _CopasState extends State<Copas> {
+class _CopasState extends State<CopasPage> {
+  final _formKey = GlobalKey<FormState>();
     final TextEditingController fechaNacimientoController = TextEditingController();
+    final TextEditingController equipo1Controller = TextEditingController();
+final TextEditingController equipo2Controller = TextEditingController();
+
   
   final DateFormat _formatoFecha = DateFormat('dd/MM/yyyy');
 
   void dispose() {
     fechaNacimientoController.dispose();
+      equipo1Controller.dispose();
+  equipo2Controller.dispose();
     super.dispose();
   }
 
@@ -40,16 +46,28 @@ class _CopasState extends State<Copas> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
-        child: AppBar(
-          centerTitle: true,
-          backgroundColor: Color.fromARGB(255, 0, 2, 3),
-          title: Text(
-              style: TextStyle(color: Colors.white), 'COPAS GANADAS'),
-          titleTextStyle: TextStyle(
-            fontFamily: 'Outfit',
-            fontSize: 22,
-            letterSpacing: 3,
-          ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/TUNEL.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            AppBar(
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              title: Text(
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), 'COPAS GANADAS'),
+              titleTextStyle: TextStyle(
+                fontFamily: 'Outfit',
+                fontSize: 22,
+                letterSpacing: 3,
+              ),
+            ),
+          ],
         ),
       ),
       body: Stack(
@@ -57,7 +75,7 @@ class _CopasState extends State<Copas> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/Wallp.jpeg'),
+                image: AssetImage('assets/images/B.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -76,16 +94,16 @@ class _CopasState extends State<Copas> {
                     separatorBuilder: (context,index)=>Divider(),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index){
-                      var copa = snapshot.data!.docs[index];
+                      var copas = snapshot.data!.docs[index];
                       DateTime fechaNacimiento;
-                      if (copa['fecha'] is String && copa['fecha'].isNotEmpty) {
+                      if (copas['Fecha'] is String && copas['Fecha'].isNotEmpty) {
                         try {
-                          fechaNacimiento = DateFormat('dd/MM/yyyy').parse(copa['fecha']);
+                          fechaNacimiento = DateFormat('dd/MM/yyyy').parse(copas['Fecha']);
                         } catch (e) {
                           fechaNacimiento = DateTime.now();
                         }
-                      } else if (copa['fecha'] is Timestamp) {
-                        fechaNacimiento = copa['fecha'].toDate();
+                      } else if (copas['Fecha'] is Timestamp) {
+                        fechaNacimiento = copas['Fecha'].toDate();
                       } else {
                         fechaNacimiento = DateTime.now();
                       }
@@ -98,14 +116,76 @@ class _CopasState extends State<Copas> {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 
-                                image: AssetImage("assets/images/cardwall.jpg"),
+                                image: AssetImage("assets/images/banner.png"),
                                 fit: BoxFit.cover,
                               ),
                             ),
                         child: ListTile(
                           leading: Icon(MdiIcons.trophy, color: Colors.amber, size: 40,),
-                          title: Text('${copa['nombre_titulo']} \nFecha: ' + _formatoFecha.format(fechaNacimiento) , style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
-                          subtitle: Text('${copa['ultimo_partido']}', style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
+                          title: Text('${copas['Nombre Titulo']} \nFecha: ' + _formatoFecha.format(fechaNacimiento) , style: TextStyle(fontSize: 15 ,color: Colors.white, fontWeight: FontWeight.bold),),
+                          subtitle: Text('${copas['Ultimo Partido']}', style: TextStyle(fontSize:15, color: Colors.white, fontWeight: FontWeight.bold),),
+
+                          //eliminar copa
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red, size: 20,),
+                                onPressed: (){
+                                  showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text('Eliminar Copa'),
+                                                content: Text(
+                                                    '¿Está seguro de eliminar ${copas['Nombre Titulo']}?'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    child: Text('Cancelar'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                    child: Text('Eliminar'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                      // Eliminar jugador
+                                                      FirestoreService()
+                                                          .deleteCopa(
+                                                              copas.id);
+                                                    },
+                                                  )
+                                                ],
+                                              );
+                                            });
+                                },
+                              ),
+                              //mostrar datos curiosos
+                              IconButton(
+                                icon: Icon(Icons.info, color: Colors.white, size: 20,),
+                                onPressed: (){
+                                  showDialog(
+                                    context: context,
+                                    builder: (context){
+                                      return AlertDialog(
+                                        title: Text('Datos Curiosos'),
+                                        content: Text('${copas['Datos Curiosos']}'),
+                                        actions: [
+                                          TextButton(
+                                            child: Text('Cerrar'),
+                                            onPressed: (){
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                  );
+                                },
+                              ),
+                            ],
+                          )
                         ),
                           )
                       );
@@ -120,48 +200,173 @@ class _CopasState extends State<Copas> {
       ),
 
       //boton para añadir copas
-      floatingActionButton: FloatingActionButton(onPressed: (){
+      floatingActionButton: FloatingActionButton(
+        elevation: 4,
+        foregroundColor: const Color.fromARGB(255, 255, 238, 0),
+        backgroundColor: Color.fromARGB(255, 0, 0, 0),
+        onPressed: (){
         showDialog(
           context: context,
           builder: (context){
+            String nombre_titulo = '';
+            List<String> ultimo_partido = [];
+            String fechaNacimiento = '';
+
+            String datos = '';
+
             return AlertDialog(
               title: Text('Añadir Copa'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    decoration: InputDecoration(hintText: 'Nombre de la Copa'),
-                    controller: TextEditingController(),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(hintText: 'Ultimo Partido'),
-                    controller: TextEditingController(),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(hintText: 'Fecha de la Copa'),
-                    controller: TextEditingController(),
-                  ),
-                ],
+              content: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(hintText: 'Nombre de la Copa'),
+                      onChanged: (value){
+                        nombre_titulo = value;
+                      },
+                      validator: (value){
+                        if(value == null || value.isEmpty){
+                          return 'Por favor ingrese el nombre de la copa';
+                        }
+                        if(value.length < 3){
+                          return 'El nombre de la copa debe tener al menos 3 caracteres';
+                        }
+                        if(value.length > 50){
+                          return 'El nombre de la copa debe tener menos de 50 caracteres';
+                        }
+                        if(value.contains(RegExp(r'[0-9]'))){
+                          return 'El nombre de la copa no puede contener números';
+                        }
+                        if(value.contains(RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]'))){
+                          return 'El nombre de la copa no puede contener caracteres especiales';
+                        }
+                        return null;
+                      },
+                    
+                    ),
+                    TextFormField(
+                      controller: equipo1Controller,
+                      decoration: InputDecoration(hintText: 'Equipo local'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor ingrese el primer equipo';
+                        }
+                        if (value.length < 3) {
+                          return 'El nombre del equipo debe tener al menos 3 caracteres';
+                        }
+                        if (value.length > 50) {
+                          return 'El nombre del equipo debe tener menos de 50 caracteres';
+                        }
+                        if (value.contains(RegExp(r'[0-9]'))) {
+                          return 'El nombre del equipo no puede contener números';
+                        }
+                        if (value == equipo2Controller.text) {
+                          return 'El nombre del equipo 2 no puede ser igual al nombre del equipo 1';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: equipo2Controller,
+                      decoration: InputDecoration(hintText: 'Equipo visita'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor ingrese el segundo equipo';
+                        }
+                        if (value.length < 3) {
+                          return 'El nombre del equipo debe tener al menos 3 caracteres';
+                        }
+                        if (value.length > 50) {
+                          return 'El nombre del equipo debe tener menos de 50 caracteres';
+                        }
+                        if (value.contains(RegExp(r'[0-9]'))) {
+                          return 'El nombre del equipo no puede contener números';
+                        }
+                        
+                        if (value == equipo1Controller.text) {
+                          return 'El nombre del equipo 2 no puede ser igual al nombre del equipo 1';
+                        }
+                        return null;
+                      },
+                    ),
+                    GestureDetector(
+                            onTap: () => _seleccionarFecha(context),
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: fechaNacimientoController,
+                                decoration: InputDecoration(
+                                  labelText: 'Fecha de Nacimiento',
+                                ),
+                                validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor seleccione la fecha de nacimiento';
+                                    }
+                                    if (value.length != 10) {
+                                      return 'Por favor seleccione la fecha de nacimiento';
+                                    }
+                                    return null;
+                                  },
+                                
+                                
+                              ),
+                              
+                            ),
+                          ),
+
+                    TextFormField(
+                      decoration: InputDecoration(hintText: 'Datos'),
+                      onChanged: (value){
+                        datos = value;
+                      },
+                      validator: (value){
+                        if(value == null || value.isEmpty){
+                          return 'Por favor ingrese un dato historico';
+                        }
+                        if(value.length < 3){
+                          return 'Los datos deben tener al menos 3 caracteres';
+                        }
+                        if(value.length > 1000){
+                          return 'Los datos deben tener menos de 1000 caracteres';
+                        }
+                        if(value.contains(RegExp(r'[0-9]'))){
+                          return 'Los datos no pueden contener números';
+                        }
+                        
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
+                  child: Text('Cancelar'),
                   onPressed: (){
                     Navigator.pop(context);
                   },
-                  child: Text('Cancelar'),
+                  
                 ),
                 TextButton(
-                  onPressed: (){
-                    FirestoreService().addCopa('nombre_titulo', 'ultimo_partido', 'fecha');
-                    Navigator.pop(context);
-                  },
                   child: Text('Añadir'),
+                  onPressed: (){
+                    if(!_formKey.currentState!.validate()){
+                    fechaNacimiento = fechaNacimientoController.text;
+                    ultimo_partido.add(equipo1Controller.text);
+                    ultimo_partido.add(equipo2Controller.text);
+                    Navigator.pop(context);
+                    FirestoreService().addCopa(nombre_titulo, ultimo_partido, fechaNacimiento, datos);
+                    }
+                  },
+                  
                 ),
               ],
             );
           },
         );
       },
+      child: Icon(Icons.add),
       )
     );
   }

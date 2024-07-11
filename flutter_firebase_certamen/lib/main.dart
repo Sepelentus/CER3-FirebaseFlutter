@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_certamen/Initial/login.dart';
+//import 'package:flutter_firebase_certamen/Initial/principal.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: LoginPage(),
+      
     );
   }
 }

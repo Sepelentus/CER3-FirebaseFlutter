@@ -39,7 +39,7 @@ class Principalpage extends StatelessWidget {
                       },
               icon: Icon(BoxIcons.bx_exit),
               tooltip: 'Cerrar sesion',
-              color: Colors.blue,
+              color: Color.fromARGB(255, 255, 0, 0),
               padding: EdgeInsets.only(left: 25),
               )
             ],
@@ -47,14 +47,14 @@ class Principalpage extends StatelessWidget {
           //Text('COLO-COLO', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
           bottom:TabBar(
             //255,23,184,255
-            labelColor: Color.fromARGB(255, 255, 0, 0),
+            labelColor: Color.fromARGB(255, 255, 238, 0),
             unselectedLabelColor: Color.fromARGB(83, 255, 255, 255),
-            indicatorColor: Color.fromARGB(255, 255, 255, 255),
+            indicatorColor: Color.fromARGB(255, 238, 255, 0),
             tabs: [Tab(icon: Icon(BoxIcons.bx_user)), Tab(icon: Icon(BoxIcons.bx_trophy))],
           ),
         ),
         body: TabBarView(
-          children: [JugadoresPage(), Copas()],
+          children: [JugadoresPage(), CopasPage()],
         ),
       ),
     );
