@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
     final AutenticacionGoogle _authService = AutenticacionGoogle();
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 237, 237, 237),
+      backgroundColor: Color.fromARGB(255, 3, 1, 30),
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(24.0),
@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget {
               Text(
                 '¡Bienvenido!',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 201, 49, 49),
+                  color: Color.fromARGB(255, 240, 6, 6),
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
@@ -37,7 +37,7 @@ class LoginPage extends StatelessWidget {
               Text(
                 'Porfavor, inicie sesion con Google',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 0, 0, 0),
+                  color: Color.fromARGB(255, 227, 227, 227),
                   fontSize: 20,
                   fontWeight: FontWeight.normal,
                 ),
@@ -45,11 +45,12 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 12, 29, 86),
+                  backgroundColor: Color.fromARGB(255, 5, 33, 126),
                   foregroundColor: Color(0xFF1b141a),
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(12.0),
+                    side: BorderSide(color: Colors.white)
                   ),
                 ),
                 onPressed: () async {
